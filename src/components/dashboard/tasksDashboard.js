@@ -249,7 +249,7 @@ export default function TasksDashboard({ isSignedIn }) {
         <div className="flex flex-col items-center justify-center py-10">
           <Inbox className="h-10 w-10 text-gray-400 mb-3 animate-bounce" />
           <p className="text-gray-600 text-lg font-semibold">
-            You're all caught up! 🎉
+            You are all caught up! 🎉
           </p>
           <p className="text-sm text-gray-400 mt-1">
             No tasks waiting for you.
