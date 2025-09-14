@@ -93,16 +93,17 @@ export default function Integrations() {
             <div className="flex flex-col md:flex-row items-center gap-6 text-left">
               <div className="flex-1 space-y-4">
                 <p className="text-gray-700">
-                  1️⃣ <b>Google Sign-In</b> You sign in securely with your Google
-                  account.
+                  1️⃣ <b>Google Sign-In</b> &rarr; You sign in securely with your
+                  Google account.
                 </p>
                 <p className="text-gray-700">
-                  2️⃣ <b>Grant Permissions</b> Approve access for Gmail,
+                  2️⃣ <b>Grant Permissions</b> &rarr; Approve access for Gmail,
                   Calendar, Drive, and Tasks to unlock the full power of AI.
                 </p>
                 <p className="text-gray-700">
-                  3️⃣ <b>AI at Work</b> Give one simple prompt, and the agent
-                  manages your inbox, schedules tasks, and keeps you on track.
+                  3️⃣ <b>AI at Work</b> &rarr; Give one simple prompt, and the
+                  agent manages your inbox, schedules tasks, and keeps you on
+                  track.
                 </p>
               </div>
               <motion.div
@@ -121,7 +122,9 @@ export default function Integrations() {
                     <span className="ml-3 text-gray-400 text-sm">AI Agent</span>
                   </div>
                   <div className="p-4 text-sm space-y-2">
-                    <p className="text-gray-300">User: "Plan my weeK"</p>
+                    <p className="text-gray-300">
+                      User: &quot;Plan my week&quot;
+                    </p>
                     <p className="text-blue-400 animate-pulse">
                       AI is organizing tasks...
                     </p>
