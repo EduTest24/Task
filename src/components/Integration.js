@@ -2,8 +2,6 @@
 
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
 
 const integrations = [
   {
@@ -65,7 +63,13 @@ export default function Integrations() {
             >
               <Card className="rounded-2xl shadow-md hover:shadow-xl transition overflow-hidden">
                 <CardContent className="flex items-center gap-6 p-6">
-                  <img src={item.img} alt={item.title} className="h-14" />
+                  <Image
+                    src={item.img}
+                    alt={item.title}
+                    height={56}
+                    width={56}
+                    className="h-14 w-14"
+                  />
                   <div className="text-left">
                     <h4 className="text-xl font-semibold">{item.title}</h4>
                     <p className="text-gray-600 mt-1">{item.desc}</p>
@@ -89,19 +93,18 @@ export default function Integrations() {
             <div className="flex flex-col md:flex-row items-center gap-6 text-left">
               <div className="flex-1 space-y-4">
                 <p className="text-gray-700">
-                  1️⃣ <b>Google Sign-In</b> → You sign in securely with your
-                  Google account.
+                  1️⃣ <b>Google Sign-In</b> You sign in securely with your Google
+                  account.
                 </p>
                 <p className="text-gray-700">
-                  2️⃣ <b>Grant Permissions</b> → Approve access for Gmail,
+                  2️⃣ <b>Grant Permissions</b> Approve access for Gmail,
                   Calendar, Drive, and Tasks to unlock the full power of AI.
                 </p>
                 <p className="text-gray-700">
-                  3️⃣ <b>AI at Work</b> → Give one simple prompt, and the agent
+                  3️⃣ <b>AI at Work</b> Give one simple prompt, and the agent
                   manages your inbox, schedules tasks, and keeps you on track.
                 </p>
               </div>
-
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 whileInView={{ scale: 1, opacity: 1 }}
@@ -118,7 +121,7 @@ export default function Integrations() {
                     <span className="ml-3 text-gray-400 text-sm">AI Agent</span>
                   </div>
                   <div className="p-4 text-sm space-y-2">
-                    <p className="text-gray-300">User: "Plan my week"</p>
+                    <p className="text-gray-300">User: "Plan my weeK"</p>
                     <p className="text-blue-400 animate-pulse">
                       AI is organizing tasks...
                     </p>

@@ -12,7 +12,7 @@ export default function CTA() {
     if (isSignedIn) {
       router.push("/dashboard");
     } else {
-      router.push("/sign-up");
+      router.push("/sign-in");
     }
   };
 

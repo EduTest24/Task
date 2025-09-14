@@ -316,9 +316,7 @@ export default function AiInteractionPage() {
           <DialogHeader>
             <DialogTitle>Confirm Task Deletion</DialogTitle>
           </DialogHeader>
-          <p>
-            Are you sure you want to delete the task "{taskToDelete?.title}"?
-          </p>
+          <p>Are you sure you want to delete the task {taskToDelete?.title}?</p>
           <DialogFooter>
             <Button
               variant="secondary"
