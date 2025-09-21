@@ -26,7 +26,7 @@ const HEADER_HEIGHT = 64; // Adjust to your website header height
 export default function Dashboard() {
   const { user, isSignedIn } = useUser();
   const hasSyncedRef = useRef(false);
-  const [activeSection, setActiveSection] = useState("emails");
+  const [activeSection, setActiveSection] = useState("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
