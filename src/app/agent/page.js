@@ -67,7 +67,6 @@ export default function MultiAgentChatPage() {
 
       const agentJson = await agentRes.json();
       if (!agentJson.success) throw new Error(`${agent} agent failed`);
-      console.log("Agent response:", agentJson);
       const data = agentJson.events || agentJson;
 
       const interpRes = await fetch("/api/interpret", {

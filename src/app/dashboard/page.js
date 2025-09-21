@@ -18,7 +18,7 @@ import {
 import CalendarDashboard from "@/components/dashboard/calendarDashboard";
 import TasksDashboard from "@/components/dashboard/tasksDashboard";
 import OverviewDashboard from "@/components/dashboard/OverviewDashboard";
-import EmptyState from "@/components/EmptyState";
+import EmailDashboard from "@/components/dashboard/emailDashboard";
 import { motion, AnimatePresence } from "framer-motion";
 
 const HEADER_HEIGHT = 64; // Adjust to your website header height
@@ -26,7 +26,7 @@ const HEADER_HEIGHT = 64; // Adjust to your website header height
 export default function Dashboard() {
   const { user, isSignedIn } = useUser();
   const hasSyncedRef = useRef(false);
-  const [activeSection, setActiveSection] = useState("overview");
+  const [activeSection, setActiveSection] = useState("emails");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
@@ -195,13 +195,7 @@ export default function Dashboard() {
               {activeSection === "tasks" && (
                 <TasksDashboard isSignedIn={isSignedIn} />
               )}
-              {activeSection === "emails" && (
-                <EmptyState
-                  title="Emails Coming Soon!"
-                  description="You’ll be able to view and manage your emails here once this feature is live."
-                  Icon={Mail}
-                />
-              )}
+              {activeSection === "emails" && <EmailDashboard />}
             </motion.div>
           </AnimatePresence>
         </main>

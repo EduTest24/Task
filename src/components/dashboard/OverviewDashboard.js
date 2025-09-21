@@ -422,7 +422,7 @@ function StatCard({ icon, label, value, color }) {
       transition={{ duration: 0.3 }}
     >
       <Card className="relative overflow-hidden rounded-2xl shadow-lg hover:shadow-xl bg-gradient-to-br from-white to-gray-50 backdrop-blur-sm transition">
-        <CardContent className="p-5 flex items-center justify-between">
+        <CardContent className="p-4 flex items-center justify-between">
           {/* Left: Label + Value */}
           <div>
             <p className="text-sm font-medium text-gray-500">{label}</p>

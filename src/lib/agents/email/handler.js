@@ -138,6 +138,71 @@ function buildSearchQuery({ unread, from, subject, keyword, after, before }) {
   return q.trim();
 }
 
+async function addLabelToEmail(id, labelIds = [], userId) {
+  const gmail = await getGmailClient(userId);
+  await gmail.users.messages.modify({
+    userId: "me",
+    id,
+    requestBody: { addLabelIds: labelIds },
+  });
+  return { success: true, message: `Labels ${labelIds} added to email ${id}` };
+}
+
+async function removeLabelFromEmail(id, labelIds = [], userId) {
+  const gmail = await getGmailClient(userId);
+  await gmail.users.messages.modify({
+    userId: "me",
+    id,
+    requestBody: { removeLabelIds: labelIds },
+  });
+  return {
+    success: true,
+    message: `Labels ${labelIds} removed from email ${id}`,
+  };
+}
+
+async function getThreadById(threadId, userId) {
+  const gmail = await getGmailClient(userId);
+  const res = await gmail.users.threads.get({
+    userId: "me",
+    id: threadId,
+  });
+  return { success: true, thread: res.data };
+}
+
+async function batchModifyEmails(
+  ids = [],
+  { addLabelIds = [], removeLabelIds = [] },
+  userId
+) {
+  const gmail = await getGmailClient(userId);
+  await gmail.users.messages.batchModify({
+    userId: "me",
+    requestBody: { ids, addLabelIds, removeLabelIds },
+  });
+  return { success: true, message: `Batch modified ${ids.length} emails` };
+}
+
+function buildEmailDigest(emails) {
+  return emails.map((e) => ({
+    id: e.id,
+    subject: e.subject,
+    from: e.from,
+    date: e.date,
+    link: e.link,
+    snippet: e.snippet.slice(0, 120) + "...",
+  }));
+}
+
+function groupEmailsBySender(emails) {
+  const groups = {};
+  for (const e of emails) {
+    if (!groups[e.from]) groups[e.from] = [];
+    groups[e.from].push(e);
+  }
+  return groups;
+}
+
 module.exports = {
   sendEmail,
   fetchEmailsByQuery,
@@ -147,4 +212,10 @@ module.exports = {
   starEmail,
   deleteEmail,
   buildSearchQuery,
+  addLabelToEmail,
+  removeLabelFromEmail,
+  getThreadById,
+  batchModifyEmails,
+  buildEmailDigest,
+  groupEmailsBySender,
 };

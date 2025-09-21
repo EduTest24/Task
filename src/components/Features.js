@@ -54,7 +54,7 @@ function FeatureRow({ feature, reverse }) {
   return (
     <div
       ref={ref}
-      className={`grid md:grid-cols-2 gap-12 items-center ${
+      className={`  grid md:grid-cols-2 gap-6 items-center ${
         reverse ? "md:flex-row-reverse" : ""
       }`}
     >
@@ -63,7 +63,7 @@ function FeatureRow({ feature, reverse }) {
         initial={{ opacity: 0, x: reverse ? 60 : -60 }}
         animate={inView ? { opacity: 1, x: 0 } : {}}
         transition={{ duration: 0.7 }}
-        className="space-y-5 text-left"
+        className="space-y-5 text-left ml-5"
       >
         <div className="flex items-center gap-3">
           {feature.icon}
