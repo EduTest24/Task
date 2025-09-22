@@ -178,7 +178,7 @@ export default function EmailDashboard() {
   };
 
   return (
-    <div className="p-6 bg-gradient-to-b from-slate-50 via-white to-slate-100 min-h-screen">
+    <div className="  min-h-screen">
       {/* Summary + Top Senders */}
       <div className="flex flex-col lg:flex-row gap-6 mb-6">
         {/* Summary Cards (60%) */}
