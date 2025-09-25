@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Plus, Search, X, Pin } from "lucide-react";
+import { Plus, Search, X, Pin, MessageSquare, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -16,65 +16,54 @@ export default function Sidebar({
   setSearch,
 }) {
   return (
-    <div className="flex flex-col h-full w-full sm:w-80 bg-gradient-to-b from-white/80 to-gray-50 shadow-lg border-r border-gray-200">
-      
-      {/* Header */}
-      <div className="p-4 flex justify-between items-center border-b border-gray-200">
-        <h2 className="font-semibold text-gray-700 text-lg">Chats</h2>
-        <Button
-          size="sm"
-          onClick={createNewChat}
-          className="text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-full p-2 shadow-sm"
-        >
-          <Plus className="w-4 h-4" />
-        </Button>
-      </div>
-
-      {/* Search */}
-      <div className="p-3">
-        <div className="flex items-center gap-2 bg-gray-100/70 backdrop-blur-sm rounded-lg px-3 py-2 shadow-inner">
+    <div className="relative flex flex-col h-[calc(100vh-64px)] w-full sm:w-80 bg-white/70 backdrop-blur-xl shadow-lg border-r border-gray-100">
+      {/* Search Bar */}
+      <div className="p-4">
+        <div className="flex items-center gap-2 bg-gray-100/70 rounded-lg px-3 py-2 shadow-sm focus-within:ring-2 focus-within:ring-blue-500 transition">
           <Search className="w-4 h-4 text-gray-400" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search chats..."
+            placeholder="Search..."
             className="bg-transparent outline-none w-full text-sm text-gray-700 placeholder-gray-400"
           />
         </div>
       </div>
 
       {/* Chat List */}
-      <div className="flex-1 overflow-y-auto m-2">
+      <div className="flex-1 overflow-y-auto px-3 pb-20">
         {chats.map((chat) => (
           <div
             key={chat.id}
             onClick={() => setActiveChatId(chat.id)}
             className={cn(
-              "p-3 flex justify-between items-center cursor-pointer rounded-lg transition-all mb-1 hover:bg-blue-50 hover:shadow-sm",
-              activeChatId === chat.id ? "bg-blue-100 font-medium shadow-inner" : ""
+              "group relative flex flex-col p-3 mb-2 rounded-lg cursor-pointer transition-all",
+              activeChatId === chat.id
+                ? "bg-blue-50 border border-blue-200 shadow-sm"
+                : "bg-white hover:bg-gray-50 border border-gray-100"
             )}
           >
-            <div className="flex items-center gap-2 truncate">
+            {/* Chat Title */}
+            <div className="flex items-center justify-between">
               <span
                 className={cn(
-                  "truncate",
-                  chat.pinned ? "text-blue-600 font-semibold" : "text-gray-700"
+                  "truncate text-sm font-medium",
+                  chat.pinned ? "text-blue-600" : "text-gray-800"
                 )}
               >
                 {chat.title}
               </span>
-              {chat.pinned && (
-                <Pin className="w-4 h-4 text-blue-500" title="Pinned chat" />
-              )}
+              {chat.pinned && <Pin className="w-3 h-3 text-blue-500" />}
             </div>
 
-            {/* Actions */}
-            <div className="flex gap-1   group-hover:opacity-100 transition-all">
+            {/* Actions (hover reveal) */}
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
               <Button
                 variant="ghost"
                 size="icon"
                 className="h-6 w-6"
+                title={chat.pinned ? "Unpin" : "Pin"}
                 onClick={(e) => {
                   e.stopPropagation();
                   togglePinChat(chat.id);
@@ -91,22 +80,42 @@ export default function Sidebar({
                 variant="ghost"
                 size="icon"
                 className="h-6 w-6"
+                title="Delete"
                 onClick={(e) => {
                   e.stopPropagation();
                   deleteChat(chat.id);
                 }}
               >
-                <X className="h-4 w-4 text-red-500" />
+                <Trash2 className="h-4 w-4 text-red-500" />
               </Button>
             </div>
           </div>
         ))}
 
+        {/* Empty State */}
         {chats.length === 0 && (
-          <div className="p-4 text-gray-400 text-center text-sm">
-            No chats yet. Create a new one!
+          <div className="flex flex-col items-center justify-center p-10 text-gray-400 text-sm">
+            <MessageSquare className="w-10 h-10 mb-3 opacity-50" />
+            <p className="mb-2">No chats yet</p>
+            <Button
+              onClick={createNewChat}
+              className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+            >
+              Start a Chat
+            </Button>
           </div>
         )}
+      </div>
+
+      {/* Floating Action Button */}
+      <div className="absolute bottom-6 right-6">
+        <Button
+          size="icon"
+          onClick={createNewChat}
+          className="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-3 shadow-lg transition-transform hover:scale-110"
+        >
+          <Plus className="w-5 h-5" />
+        </Button>
       </div>
     </div>
   );

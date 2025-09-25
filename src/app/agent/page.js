@@ -9,7 +9,6 @@ import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import ResponseRenderer from "@/components/ResponseRenderer";
 import Sidebar from "@/components/chat/Sidebar";
-import AgentHeader from "@/components/chat/ChatHeader";
 import TypingIndicator from "@/components/chat/TypingIndicator";
 import ChatInput from "@/components/chat/ChatInput";
 
@@ -24,7 +23,7 @@ export default function MultiAgentChatPage() {
   const [activeChatId, setActiveChatId] = useState(chats[0].id);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [editMessageId, setEditMessageId] = useState(null); // new state for edit
+  const [editMessageId, setEditMessageId] = useState(null);
   const endRef = useRef(null);
 
   // Auto-scroll
@@ -142,7 +141,7 @@ export default function MultiAgentChatPage() {
     .sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
 
   return (
-    <div className="relative flex h-screen w-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-repeat bg-gray-50 overflow-hidden">
+    <div className="relative flex h-[calc(100vh-64px)] w-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-repeat bg-gray-50 overflow-hidden">
       {/* Animated glowing overlay */}
       <motion.div
         className="absolute inset-0 pointer-events-none bg-gradient-to-r from-transparent via-blue-200 to-transparent opacity-20"
@@ -171,6 +170,9 @@ export default function MultiAgentChatPage() {
             deleteChat={deleteChat}
             search={search}
             setSearch={setSearch}
+            agent={agent}
+            setAgent={setAgent}
+            handleClear={handleClear}
           />
         </SheetContent>
       </Sheet>
@@ -185,20 +187,15 @@ export default function MultiAgentChatPage() {
           deleteChat={deleteChat}
           search={search}
           setSearch={setSearch}
+          agent={agent}
+          setAgent={setAgent}
+          handleClear={handleClear}
         />
       </aside>
 
       {/* Main chat */}
       <div className="flex flex-col flex-1 relative z-10">
-        <AgentHeader
-          agent={agent}
-          setAgent={setAgent}
-          handleClear={handleClear}
-        />
-
-        <Separator />
-
-        <main className="flex-1 overflow-y-auto p-4 space-y-4 relative">
+        <main className="flex-1 overflow-y-auto p-6 space-y-6 relative bg-transparent">
           {/* Chat messages */}
           {messages.map((msg, idx) => (
             <motion.div
@@ -206,15 +203,23 @@ export default function MultiAgentChatPage() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className={`flex ${
+              className={`flex items-end gap-2 ${
                 msg.role === "user" ? "justify-end" : "justify-start"
               } group`}
             >
+              {/* Assistant Avatar */}
+              {msg.role === "assistant" && (
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-transparent border border-gray-300 flex items-center justify-center backdrop-blur-sm">
+                  <span className="text-xs font-medium text-gray-600">AI</span>
+                </div>
+              )}
+
+              {/* Message Bubble */}
               <div
-                className={`p-3 rounded-2xl shadow-sm max-w-[80%] break-words transition ${
+                className={`p-3 rounded-2xl shadow-sm max-w-[75%] break-words transition backdrop-blur-sm ${
                   msg.role === "user"
-                    ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white"
-                    : "bg-white border border-gray-200 text-gray-900 relative"
+                    ? "bg-transparent border border-gray-300 text-gray-900"
+                    : "bg-transparent border border-gray-200 text-gray-900"
                 }`}
               >
                 {msg.role === "assistant" ? (
@@ -223,33 +228,39 @@ export default function MultiAgentChatPage() {
                   msg.content
                 )}
 
+                {/* Actions for assistant */}
                 {msg.role === "assistant" && (
                   <div className="flex gap-2 mt-2 opacity-0 group-hover:opacity-100 transition">
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-6 w-6"
+                      className="h-6 w-6 rounded-full hover:bg-gray-100/30"
                       onClick={() => handleCopy(msg.content)}
                     >
-                      <Copy className="h-3 w-3" />
+                      <Copy className="h-3 w-3 text-gray-500" />
                     </Button>
-
-                    {/* Edit-in-place button */}
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-6 w-6"
+                      className="h-6 w-6 rounded-full hover:bg-gray-100/30"
                       onClick={() => {
                         setInput(msg.content);
                         setEditMessageId(idx);
                         toast.message("Editing this response");
                       }}
                     >
-                      <RefreshCcw className="h-3 w-3" />
+                      <RefreshCcw className="h-3 w-3 text-gray-500" />
                     </Button>
                   </div>
                 )}
               </div>
+
+              {/* User Avatar */}
+              {msg.role === "user" && (
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-transparent border border-gray-300 flex items-center justify-center backdrop-blur-sm">
+                  <span className="text-xs font-medium text-gray-700">U</span>
+                </div>
+              )}
             </motion.div>
           ))}
 
@@ -262,30 +273,32 @@ export default function MultiAgentChatPage() {
                   key={`skeleton-${idx}`}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="flex justify-start"
+                  className="flex justify-start items-center gap-2"
                 >
-                  <div className="p-3 rounded-2xl bg-gray-200 animate-pulse max-w-[60%] h-6"></div>
+                  <div className="w-8 h-8 rounded-full bg-gray-200/40 backdrop-blur-sm animate-pulse" />
+                  <div className="p-3 rounded-2xl bg-gray-200/40 backdrop-blur-sm animate-pulse max-w-[60%] h-6"></div>
                 </motion.div>
               ))}
 
           <TypingIndicator
             loading={loading}
             message="Assistant is typing..."
-            dotColor="bg-blue-500"
-            dotSize="w-3 h-3"
+            dotColor="bg-gray-400"
+            dotSize="w-2.5 h-2.5"
           />
 
           <div ref={endRef} />
         </main>
 
-        {/* Chat input */}
+        {/* Chat Input */}
         <ChatInput
           agent={agent}
+          setAgent={setAgent}
           input={input}
           setInput={setInput}
           sendMessage={sendMessage}
           loading={loading}
-          autoResize // flag to enable smart auto-resize
+          autoResize={true}
         />
       </div>
     </div>
