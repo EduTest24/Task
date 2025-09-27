@@ -10,7 +10,10 @@ export default function TaskActionButton({ taskData }) {
       const res = await fetch("/api/agent/tasks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(taskData),
+        // Convert structured object into a string for backend
+        body: JSON.stringify({
+          data: JSON.stringify(taskData),
+        }),
       });
 
       if (!res.ok) throw new Error("Task creation failed");

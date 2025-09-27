@@ -10,7 +10,9 @@ export default function CalendarActionButton({ eventData }) {
       const res = await fetch("/api/agent/calendar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(eventData),
+        body: JSON.stringify({
+          data: JSON.stringify(eventData),
+        }),
       });
 
       if (!res.ok) throw new Error("Calendar event creation failed");
