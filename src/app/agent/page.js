@@ -66,6 +66,7 @@ export default function MultiAgentChatPage() {
 
       const agentJson = await agentRes.json();
       if (!agentJson.success) throw new Error(`${agent} agent failed`);
+      console.log(`${agent} agent response:`, agentJson);
       const data = agentJson.events || agentJson;
 
       const interpRes = await fetch("/api/interpret", {
@@ -78,7 +79,12 @@ export default function MultiAgentChatPage() {
 
       const interpJson = await interpRes.json();
       console.log("Interpreter response:", interpJson);
-      const aiMessage = { role: "assistant", content: interpJson.response };
+      const aiMessage = {
+        role: "assistant",
+        content: interpJson.response,
+        structuredData: agent === "email" ? data.emails || [] : null,
+        // assuming agentJson.events looks like { emails: [...] }
+      };
 
       updateChatMessages([...updatedMessages, aiMessage]);
     } catch (err) {
@@ -223,7 +229,10 @@ export default function MultiAgentChatPage() {
                 }`}
               >
                 {msg.role === "assistant" ? (
-                  <ResponseRenderer agent={agent} text={msg.content} />
+                  <ResponseRenderer
+                    text={msg.content}
+                    structuredData={msg.structuredData}
+                  />
                 ) : (
                   msg.content
                 )}
