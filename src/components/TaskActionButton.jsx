@@ -12,7 +12,7 @@ export default function TaskActionButton({ taskData }) {
         headers: { "Content-Type": "application/json" },
         // Convert structured object into a string for backend
         body: JSON.stringify({
-          data: JSON.stringify(taskData),
+          prompt: JSON.stringify(taskData),
         }),
       });
 

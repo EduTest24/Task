@@ -11,7 +11,7 @@ export default function CalendarActionButton({ eventData }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          data: JSON.stringify(eventData),
+          prompt: JSON.stringify(eventData),
         }),
       });
 
