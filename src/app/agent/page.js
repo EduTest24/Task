@@ -221,13 +221,7 @@ export default function MultiAgentChatPage() {
               )}
 
               {/* Message Bubble */}
-              <div
-                className={`p-3 rounded-2xl shadow-sm max-w-[75%] break-words transition backdrop-blur-sm ${
-                  msg.role === "user"
-                    ? "bg-transparent border border-gray-300 text-gray-900"
-                    : "bg-transparent border border-gray-200 text-gray-900"
-                }`}
-              >
+              <div className={`p-3 rounded-2xl max-w-[75%] break-words `}>
                 {msg.role === "assistant" ? (
                   <ResponseRenderer
                     text={msg.content}
