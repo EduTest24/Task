@@ -66,8 +66,8 @@ export default function MultiAgentChatPage() {
 
       const agentJson = await agentRes.json();
       if (!agentJson.success) throw new Error(`${agent} agent failed`);
-      console.log(`${agent} agent response:`, agentJson);
       const data = agentJson.events || agentJson;
+      console.log(`${agent} agent response:`, data);
 
       const interpRes = await fetch("/api/interpret", {
         method: "POST",
@@ -82,7 +82,7 @@ export default function MultiAgentChatPage() {
       const aiMessage = {
         role: "assistant",
         content: interpJson.response,
-        structuredData: agent === "email" ? data.emails || [] : null,
+        structuredData: agent === "email" ? data.result.emails || [] : null,
         // assuming agentJson.events looks like { emails: [...] }
       };
 
