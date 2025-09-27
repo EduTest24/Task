@@ -1,16 +1,19 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ListTodo } from "lucide-react";
+import { ListTodo, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 export default function TaskActionButton({ taskData }) {
+  const [loading, setLoading] = useState(false);
+
   const handleAddTask = async () => {
     try {
+      setLoading(true);
       const res = await fetch("/api/agent/tasks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // Convert structured object into a string for backend
         body: JSON.stringify({
           prompt: JSON.stringify(taskData),
         }),
@@ -21,6 +24,8 @@ export default function TaskActionButton({ taskData }) {
     } catch (err) {
       console.error("Task error:", err);
       toast.error("Failed to add task");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -29,10 +34,18 @@ export default function TaskActionButton({ taskData }) {
       variant="outline"
       size="sm"
       onClick={handleAddTask}
-      className="flex items-center gap-2"
+      disabled={loading}
+      className="relative flex items-center gap-2 rounded-xl border border-primary/40 
+                 bg-gradient-to-r from-primary/10 via-background to-primary/10 
+                 hover:from-primary/20 hover:to-primary/5 
+                 transition-all duration-300 ease-in-out shadow-sm hover:shadow-md"
     >
-      <ListTodo className="h-4 w-4" />
-      Add to Tasks
+      {loading ? (
+        <Loader2 className="h-4 w-4 animate-spin text-primary" />
+      ) : (
+        <ListTodo className="h-4 w-4 text-primary" />
+      )}
+      {loading ? "Adding..." : "Add to Tasks"}
     </Button>
   );
 }
