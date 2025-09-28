@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { ListTodo, RefreshCcw, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import ResponseRenderer from "@/components/ResponseRenderer";
 import Sidebar from "@/components/chat/Sidebar";
@@ -17,14 +16,31 @@ export default function MultiAgentChatPage() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [agent, setAgent] = useState("calendar");
-  const [chats, setChats] = useState([
-    { id: Date.now(), title: "New Chat", messages: [], pinned: false },
-  ]);
-  const [activeChatId, setActiveChatId] = useState(chats[0].id);
+  const [chats, setChats] = useState([]);
+  const [activeChatId, setActiveChatId] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [editMessageId, setEditMessageId] = useState(null);
   const endRef = useRef(null);
+
+  // Load chats from DB when component mounts
+  useEffect(() => {
+    const fetchChats = async () => {
+      try {
+        const res = await fetch("/api/chats");
+        if (!res.ok) throw new Error("Failed to load chats");
+        const data = await res.json();
+        setChats(data.chats || []);
+        if (data.chats.length > 0) {
+          setActiveChatId(data.chats[0]._id);
+        }
+      } catch (err) {
+        console.error("Error fetching chats:", err);
+        toast.error("Could not load chats from server");
+      }
+    };
+    fetchChats();
+  }, []);
 
   // Auto-scroll
   useEffect(() => {
@@ -33,9 +49,25 @@ export default function MultiAgentChatPage() {
 
   // Sync active chat messages
   useEffect(() => {
-    const activeChat = chats.find((c) => c.id === activeChatId);
+    const activeChat = chats.find((c) => c._id === activeChatId);
     if (activeChat) setMessages(activeChat.messages);
   }, [activeChatId, chats]);
+
+  // Save chat messages to DB
+  const persistChat = async (chatId, newMessages) => {
+    try {
+      const res = await fetch(`/api/chats/${chatId}`, {
+        // ✅ use RESTful path
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: newMessages }),
+      });
+      if (!res.ok) throw new Error("Failed to save chat");
+    } catch (err) {
+      console.error("Persist chat error:", err);
+      toast.error("Could not save chat");
+    }
+  };
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -83,7 +115,6 @@ export default function MultiAgentChatPage() {
         role: "assistant",
         content: interpJson.response,
         structuredData: agent === "email" ? data.result.emails || [] : null,
-        // assuming agentJson.events looks like { emails: [...] }
       };
 
       updateChatMessages([...updatedMessages, aiMessage]);
@@ -99,9 +130,10 @@ export default function MultiAgentChatPage() {
     setMessages(newMessages);
     setChats((prev) =>
       prev.map((chat) =>
-        chat.id === activeChatId ? { ...chat, messages: newMessages } : chat
+        chat._id === activeChatId ? { ...chat, messages: newMessages } : chat
       )
     );
+    if (activeChatId) persistChat(activeChatId, newMessages);
   };
 
   const handleCopy = async (text) => {
@@ -114,31 +146,46 @@ export default function MultiAgentChatPage() {
     toast.info("Chat cleared");
   };
 
-  const createNewChat = () => {
-    const newChat = {
-      id: Date.now(),
-      title: `Chat ${chats.length + 1}`,
-      messages: [],
-      pinned: false,
-    };
-    setChats([...chats, newChat]);
-    setActiveChatId(newChat.id);
-    setSidebarOpen(false);
+  const createNewChat = async () => {
+    try {
+      const res = await fetch("/api/chats", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: `Chat ${chats.length + 1}` }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error("Failed to create new chat");
+
+      const newChat = data.chat;
+      setChats([...chats, newChat]);
+      setActiveChatId(newChat._id);
+      setSidebarOpen(false);
+    } catch (err) {
+      console.error("Create chat error:", err);
+      toast.error("Could not create chat");
+    }
   };
 
   const togglePinChat = (id) => {
     setChats((prev) =>
       prev.map((chat) =>
-        chat.id === id ? { ...chat, pinned: !chat.pinned } : chat
+        chat._id === id ? { ...chat, pinned: !chat.pinned } : chat
       )
     );
   };
 
-  const deleteChat = (id) => {
+  const deleteChat = async (id) => {
     if (chats.length === 1) return toast.error("Cannot delete last chat");
-    setChats((prev) => prev.filter((chat) => chat.id !== id));
-    if (id === activeChatId) {
-      setActiveChatId(chats[0].id);
+    try {
+      const res = await fetch(`/api/chats/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to delete chat");
+      setChats((prev) => prev.filter((chat) => chat._id !== id));
+      if (id === activeChatId && chats.length > 1) {
+        setActiveChatId(chats[0]._id);
+      }
+    } catch (err) {
+      console.error("Delete chat error:", err);
+      toast.error("Could not delete chat");
     }
   };
 
