@@ -174,6 +174,47 @@ export default function MultiAgentChatPage() {
     );
   };
 
+  const renameChat = async (id, title) => {
+    try {
+      const res = await fetch(`/api/chats/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title }),
+      });
+      if (!res.ok) throw new Error("Failed to rename chat");
+      const updated = await res.json();
+      setChats((prev) =>
+        prev.map((chat) =>
+          chat._id === id ? { ...chat, title: updated.title } : chat
+        )
+      );
+    } catch (err) {
+      console.error("Rename chat error:", err);
+      toast.error("Could not rename chat");
+    }
+  };
+
+  // Save chat messages to DB and sync back updated chat (with auto-title)
+  const persistChat = async (chatId, newMessages) => {
+    try {
+      const res = await fetch(`/api/chats/${chatId}/messages`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newMessages[newMessages.length - 1]), // send last msg
+      });
+      if (!res.ok) throw new Error("Failed to save chat");
+      const updatedChat = await res.json();
+
+      // ✅ update local state with returned chat (title + messages)
+      setChats((prev) =>
+        prev.map((chat) => (chat._id === updatedChat._id ? updatedChat : chat))
+      );
+    } catch (err) {
+      console.error("Persist chat error:", err);
+      toast.error("Could not save chat");
+    }
+  };
+
   const deleteChat = async (id) => {
     if (chats.length === 1) return toast.error("Cannot delete last chat");
     try {
@@ -221,6 +262,7 @@ export default function MultiAgentChatPage() {
             createNewChat={createNewChat}
             togglePinChat={togglePinChat}
             deleteChat={deleteChat}
+            renameChat={renameChat}
             search={search}
             setSearch={setSearch}
             agent={agent}
@@ -238,6 +280,7 @@ export default function MultiAgentChatPage() {
           createNewChat={createNewChat}
           togglePinChat={togglePinChat}
           deleteChat={deleteChat}
+          renameChat={renameChat}
           search={search}
           setSearch={setSearch}
           agent={agent}

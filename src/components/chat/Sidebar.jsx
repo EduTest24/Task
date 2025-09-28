@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { Plus, Search, X, Pin, MessageSquare, Trash2 } from "lucide-react";
+import React, { useState } from "react";
+import { Plus, Search, Pin, MessageSquare, Trash2, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -12,9 +12,13 @@ export default function Sidebar({
   createNewChat,
   togglePinChat,
   deleteChat,
+  renameChat, // ✅ new prop
   search,
   setSearch,
 }) {
+  const [editingId, setEditingId] = useState(null);
+  const [newTitle, setNewTitle] = useState("");
+
   return (
     <div className="relative flex flex-col h-[calc(100vh-64px)] w-full sm:w-80 bg-white/70 backdrop-blur-xl shadow-lg border-r border-gray-100">
       {/* Search Bar */}
@@ -46,19 +50,52 @@ export default function Sidebar({
           >
             {/* Chat Title */}
             <div className="flex items-center justify-between">
-              <span
-                className={cn(
-                  "truncate text-sm font-medium",
-                  chat.pinned ? "text-blue-600" : "text-gray-800"
-                )}
-              >
-                {chat.title}
-              </span>
+              {editingId === chat.id ? (
+                <input
+                  type="text"
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                  onBlur={() => {
+                    renameChat(chat.id, newTitle);
+                    setEditingId(null);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      renameChat(chat.id, newTitle);
+                      setEditingId(null);
+                    }
+                  }}
+                  autoFocus
+                  className="text-sm border rounded px-2 py-1 w-full"
+                />
+              ) : (
+                <span
+                  className={cn(
+                    "truncate text-sm font-medium",
+                    chat.pinned ? "text-blue-600" : "text-gray-800"
+                  )}
+                >
+                  {chat.title}
+                </span>
+              )}
               {chat.pinned && <Pin className="w-3 h-3 text-blue-500" />}
             </div>
 
-            {/* Actions (hover reveal) */}
+            {/* Actions */}
             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6"
+                title="Rename"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditingId(chat.id);
+                  setNewTitle(chat.title);
+                }}
+              >
+                <Pencil className="h-4 w-4 text-gray-500" />
+              </Button>
               <Button
                 variant="ghost"
                 size="icon"

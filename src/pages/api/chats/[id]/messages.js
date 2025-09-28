@@ -4,26 +4,39 @@ import { getAuth } from "@clerk/nextjs/server";
 
 export default async function handler(req, res) {
   await connectDB();
+
   const { userId } = getAuth(req);
-
-  if (!userId)
-    return res.status(401).json({ success: false, error: "Unauthorized" });
-
-  const { id } = req.query;
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
   if (req.method === "POST") {
-    const { role, content, structuredData } = req.body;
+    try {
+      const { id } = req.query;
+      const { role, content } = req.body;
 
-    const chat = await Chat.findOne({ _id: id, userId });
-    if (!chat)
-      return res.status(404).json({ success: false, error: "Chat not found" });
+      // Add message
+      const chat = await Chat.findOneAndUpdate(
+        { _id: id, userId },
+        { $push: { messages: { role, content } } },
+        { new: true }
+      );
 
-    chat.messages.push({ role, content, structuredData });
-    await chat.save();
+      if (!chat) return res.status(404).json({ error: "Chat not found" });
 
-    return res.status(200).json({ success: true, chat });
+      // ✅ Auto-generate title if still "New Chat"
+      if (chat.title === "New Chat" && role === "user") {
+        const preview =
+          content.length > 30 ? content.slice(0, 30) + "…" : content;
+        chat.title = preview;
+        await chat.save();
+      }
+
+      res.status(200).json(chat);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to save message" });
+    }
+  } else {
+    res.setHeader("Allow", ["POST"]);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
   }
-
-  res.setHeader("Allow", ["POST"]);
-  return res.status(405).end(`Method ${req.method} Not Allowed`);
 }
