@@ -37,10 +37,11 @@ export default function ResponseRenderer({ text, structuredData }) {
               <p className="text-sm text-gray-600 mb-2">
                 {email.from ? `From: ${email.from}` : ""}
               </p>
-              <div className="flex gap-2">
-                <TaskActionButton taskData={email} />
-                <CalendarActionButton eventData={email} />
-              </div>
+<div className="flex flex-col sm:flex-row gap-2 sm:gap-3 flex-wrap">
+  <TaskActionButton taskData={email} />
+  <CalendarActionButton eventData={email} />
+</div>
+
             </div>
           ))}
         </div>

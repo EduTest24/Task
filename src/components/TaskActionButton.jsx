@@ -35,7 +35,7 @@ export default function TaskActionButton({ taskData }) {
       size="sm"
       onClick={handleAddTask}
       disabled={loading}
-      className="relative flex items-center gap-2 rounded-xl border border-primary/40 
+      className="w-full sm:w-auto relative flex items-center gap-2 rounded-xl border border-primary/40 
                  bg-gradient-to-r from-primary/10 via-background to-primary/10 
                  hover:from-primary/20 hover:to-primary/5 
                  transition-all duration-300 ease-in-out shadow-sm hover:shadow-md"

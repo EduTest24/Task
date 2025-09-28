@@ -35,7 +35,7 @@ export default function CalendarActionButton({ eventData }) {
       size="sm"
       onClick={handleAddCalendar}
       disabled={loading}
-      className="relative flex items-center gap-2 rounded-xl border border-blue-500/40 
+      className="w-full sm:w-auto relative flex items-center gap-2 rounded-xl border border-blue-500/40 
                  bg-gradient-to-r from-blue-50 via-background to-blue-50 
                  hover:from-blue-100 hover:to-blue-50 
                  transition-all duration-300 ease-in-out shadow-sm hover:shadow-md"
